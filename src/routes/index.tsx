@@ -1,9 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import rakhiButton from "@/assets/rakhi-button.png";
 import rakhiVideo from "@/assets/rakhi-video.mp4.asset.json";
+
+const SHAYARI_TEXT =
+  "Badi behan ka farz aapne har mod par nibhaya hai. Apne dhyan aur pyar se har din ko khas banaya hai. Dua hai meri ki aapki zindagi me har khushi beshumar ho. Is Rakhi par aapke liye mera beinteha pyar aur samman ho!";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,11 +36,54 @@ export const Route = createFileRoute("/")({
 function WelcomePage() {
   const navigate = useNavigate({ from: "/" });
   const [started, setStarted] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  const [ttsReady, setTtsReady] = useState(false);
+  const [voicesReady, setVoicesReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Prepare the browser's text-to-speech engine and voices.
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    setTtsReady(true);
+    const synth = window.speechSynthesis;
+    const update = () => setVoicesReady(synth.getVoices().length > 0);
+    update();
+    synth.addEventListener("voiceschanged", update);
+    return () => synth.removeEventListener("voiceschanged", update);
+  }, []);
+
+  const speakShayari = () => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    const synth = window.speechSynthesis;
+    if (speaking) {
+      synth.cancel();
+      setSpeaking(false);
+      return;
+    }
+    synth.cancel();
+    const utter = new SpeechSynthesisUtterance(SHAYARI_TEXT);
+    utter.lang = "hi-IN";
+    utter.rate = 0.9;
+    utter.pitch = 1;
+    const voices = synth.getVoices();
+    const hindiVoice =
+      voices.find((v) => v.lang.toLowerCase().startsWith("hi")) ||
+      voices.find((v) => v.lang.toLowerCase().startsWith("en-in"));
+    if (hindiVoice) utter.voice = hindiVoice;
+    utter.onstart = () => setSpeaking(true);
+    utter.onend = () => setSpeaking(false);
+    utter.onerror = () => setSpeaking(false);
+    synth.speak(utter);
+  };
+
   const handleStart = () => {
     if (started) return;
+    // Stop any ongoing speech before the video starts.
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setSpeaking(false);
     setStarted(true);
 
     const video = videoRef.current;
@@ -112,6 +158,16 @@ function WelcomePage() {
           <p className="mt-2 text-center text-sm font-semibold text-muted-foreground md:text-base">
             👇 Khas Paigham 👇
           </p>
+
+          <button
+            type="button"
+            onClick={speakShayari}
+            disabled={!ttsReady}
+            aria-label="Shayari sunne ke liye click karein"
+            className="mx-auto mt-5 flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-md transition hover:bg-primary/90 focus:outline-none focus-visible:ring-4 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {speaking ? "🔊 Bol raha hai..." : "🔊 Shayari Sunein"}
+          </button>
         </div>
 
         {/* Center Rakhi button */}
@@ -180,4 +236,3 @@ function WelcomePage() {
     </div>
   );
 }
-
