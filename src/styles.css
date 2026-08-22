@@ -224,17 +224,20 @@
 }
 
 @layer utilities {
-  .rakhi-button {
+  .rakhi-button,
+  .gift-box-button {
     animation: heart-beat 1.8s ease-in-out infinite, soft-glow 2.4s ease-in-out infinite;
     border-radius: 9999px;
     transition: transform 0.3s ease;
   }
 
-  .rakhi-button:hover {
+  .rakhi-button:hover,
+  .gift-box-button:hover {
     transform: scale(1.06);
   }
 
-  .rakhi-button:active {
+  .rakhi-button:active,
+  .gift-box-button:active {
     transform: scale(0.96);
   }
 

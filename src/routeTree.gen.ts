@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as Dashboard2RouteImport } from './routes/dashboard2'
+import { Route as MemoryGalleryRouteImport } from './routes/memory-gallery'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const Dashboard2Route = Dashboard2RouteImport.update({
   path: '/dashboard2',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MemoryGalleryRoute = MemoryGalleryRouteImport.update({
+  id: '/memory-gallery',
+  path: '/memory-gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard2': typeof Dashboard2Route
+  '/memory-gallery': typeof MemoryGalleryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard2': typeof Dashboard2Route
+  '/memory-gallery': typeof MemoryGalleryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard2': typeof Dashboard2Route
+  '/memory-gallery': typeof MemoryGalleryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard2'
+  fullPaths: '/' | '/dashboard2' | '/memory-gallery'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard2'
-  id: '__root__' | '/' | '/dashboard2'
+  to: '/' | '/dashboard2' | '/memory-gallery'
+  id: '__root__' | '/' | '/dashboard2' | '/memory-gallery'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   Dashboard2Route: typeof Dashboard2Route
+  MemoryGalleryRoute: typeof MemoryGalleryRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Dashboard2RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/memory-gallery': {
+      id: '/memory-gallery'
+      path: '/memory-gallery'
+      fullPath: '/memory-gallery'
+      preLoaderRoute: typeof MemoryGalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   Dashboard2Route: Dashboard2Route,
+  MemoryGalleryRoute: MemoryGalleryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
