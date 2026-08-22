@@ -43,11 +43,21 @@ function WelcomePage() {
     const video = videoRef.current;
     if (video) {
       video.currentTime = 0;
+      // Start unmuted because the click is a user gesture; if the browser still
+      // blocks audio, try muted first and then unmute once playback begins.
       video.muted = false;
-      video.play().catch(() => {
-        // Autoplay may still be blocked by the browser; the video element will
-        // show the first frame until the user interacts further.
-      });
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          video.muted = true;
+          video
+            .play()
+            .then(() => {
+              video.muted = false;
+            })
+            .catch(() => {});
+        });
+      }
     }
 
     const container = containerRef.current;
@@ -160,7 +170,6 @@ function WelcomePage() {
           src={rakhiVideo.url}
           className="h-full w-full object-contain"
           preload="auto"
-          autoPlay
           playsInline
           muted={false}
           controls={false}
@@ -171,3 +180,4 @@ function WelcomePage() {
     </div>
   );
 }
+
