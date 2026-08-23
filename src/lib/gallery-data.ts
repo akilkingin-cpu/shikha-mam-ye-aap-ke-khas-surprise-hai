@@ -18,6 +18,16 @@ import photo17 from "@/assets/gallery/photo-17.jpeg.asset.json";
 import photo18 from "@/assets/gallery/photo-18.jpeg.asset.json";
 import photo19 from "@/assets/gallery/photo-19.jpeg.asset.json";
 import photo20 from "@/assets/gallery/photo-20.jpeg.asset.json";
+import photo21 from "@/assets/gallery/photo-21.jpeg.asset.json";
+import photo22 from "@/assets/gallery/photo-22.jpeg.asset.json";
+import photo23 from "@/assets/gallery/photo-23.jpeg.asset.json";
+import photo24 from "@/assets/gallery/photo-24.jpeg.asset.json";
+import photo25 from "@/assets/gallery/photo-25.jpeg.asset.json";
+import photo26 from "@/assets/gallery/photo-26.jpeg.asset.json";
+import photo27 from "@/assets/gallery/photo-27.jpeg.asset.json";
+import photo28 from "@/assets/gallery/photo-28.jpeg.asset.json";
+import photo29 from "@/assets/gallery/photo-29.jpeg.asset.json";
+import photo30 from "@/assets/gallery/photo-30.jpeg.asset.json";
 
 export type GalleryCard = {
   id: string;
