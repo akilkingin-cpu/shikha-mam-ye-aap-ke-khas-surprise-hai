@@ -8,6 +8,16 @@ import photo7 from "@/assets/gallery/photo-7.jpeg.asset.json";
 import photo8 from "@/assets/gallery/photo-8.jpeg.asset.json";
 import photo9 from "@/assets/gallery/photo-9.jpeg.asset.json";
 import photo10 from "@/assets/gallery/photo-10.jpeg.asset.json";
+import photo11 from "@/assets/gallery/photo-11.jpeg.asset.json";
+import photo12 from "@/assets/gallery/photo-12.jpeg.asset.json";
+import photo13 from "@/assets/gallery/photo-13.jpeg.asset.json";
+import photo14 from "@/assets/gallery/photo-14.jpeg.asset.json";
+import photo15 from "@/assets/gallery/photo-15.jpeg.asset.json";
+import photo16 from "@/assets/gallery/photo-16.jpeg.asset.json";
+import photo17 from "@/assets/gallery/photo-17.jpeg.asset.json";
+import photo18 from "@/assets/gallery/photo-18.jpeg.asset.json";
+import photo19 from "@/assets/gallery/photo-19.jpeg.asset.json";
+import photo20 from "@/assets/gallery/photo-20.jpeg.asset.json";
 
 export type GalleryCard = {
   id: string;
@@ -28,6 +38,16 @@ const PHOTO_URLS: string[] = [
   photo8.url,
   photo9.url,
   photo10.url,
+  photo11.url,
+  photo12.url,
+  photo13.url,
+  photo14.url,
+  photo15.url,
+  photo16.url,
+  photo17.url,
+  photo18.url,
+  photo19.url,
+  photo20.url,
 ];
 
 const PHOTO_SHAYARI = [
