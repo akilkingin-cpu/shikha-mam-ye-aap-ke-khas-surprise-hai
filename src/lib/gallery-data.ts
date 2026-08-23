@@ -58,6 +58,16 @@ const PHOTO_URLS: string[] = [
   photo18.url,
   photo19.url,
   photo20.url,
+  photo21.url,
+  photo22.url,
+  photo23.url,
+  photo24.url,
+  photo25.url,
+  photo26.url,
+  photo27.url,
+  photo28.url,
+  photo29.url,
+  photo30.url,
 ];
 
 const PHOTO_SHAYARI = [
