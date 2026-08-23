@@ -62,14 +62,14 @@ export const GALLERY_CARDS: GalleryCard[] = [
   ...Array.from({ length: 42 }, (_, i): GalleryCard => ({
     id: `photo-${i + 1}`,
     kind: "photo",
-    shayari: PHOTO_SHAYARI[i % PHOTO_SHAYARI.length],
+    shayari: PHOTO_SHAYARI[i % PHOTO_SHAYARI.length] ?? "",
     url: PHOTO_URLS[i] ?? null,
     filename: `shikha-mam-photo-${i + 1}.jpeg`,
   })),
   ...Array.from({ length: 10 }, (_, i): GalleryCard => ({
     id: `video-${i + 1}`,
     kind: "video",
-    shayari: VIDEO_SHAYARI[i % VIDEO_SHAYARI.length],
+    shayari: VIDEO_SHAYARI[i % VIDEO_SHAYARI.length] ?? "",
     url: null,
     filename: `shikha-mam-video-${i + 1}.mp4`,
   })),
