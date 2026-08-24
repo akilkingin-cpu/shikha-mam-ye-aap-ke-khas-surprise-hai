@@ -41,6 +41,17 @@ import photo38 from "@/assets/gallery/photo-38.jpeg.asset.json";
 import photo39 from "@/assets/gallery/photo-39.jpeg.asset.json";
 import photo40 from "@/assets/gallery/photo-40.jpeg.asset.json";
 
+import video1 from "@/assets/gallery/video-1.mp4.asset.json";
+import video2 from "@/assets/gallery/video-2.mp4.asset.json";
+import video3 from "@/assets/gallery/video-3.mp4.asset.json";
+import video4 from "@/assets/gallery/video-4.mp4.asset.json";
+import video5 from "@/assets/gallery/video-5.mp4.asset.json";
+import video6 from "@/assets/gallery/video-6.mp4.asset.json";
+import video7 from "@/assets/gallery/video-7.mp4.asset.json";
+import video8 from "@/assets/gallery/video-8.mp4.asset.json";
+import video9 from "@/assets/gallery/video-9.mp4.asset.json";
+import video10 from "@/assets/gallery/video-10.mp4.asset.json";
+
 export type GalleryCard = {
   id: string;
   kind: "photo" | "video";
@@ -109,6 +120,19 @@ const PHOTO_SHAYARI = [
   "Aapka pyar hamesha saath rehta hai. 💐",
 ];
 
+const VIDEO_URLS: string[] = [
+  video1.url,
+  video2.url,
+  video3.url,
+  video4.url,
+  video5.url,
+  video6.url,
+  video7.url,
+  video8.url,
+  video9.url,
+  video10.url,
+];
+
 const VIDEO_SHAYARI = [
   "Chalti tasveer me bhi aapki hansi sabse pyari hai. 🎬",
   "Ye pal hamesha yaadon me chalte rahenge. 🎞️",
@@ -134,7 +158,7 @@ export const GALLERY_CARDS: GalleryCard[] = [
     id: `video-${i + 1}`,
     kind: "video",
     shayari: VIDEO_SHAYARI[i % VIDEO_SHAYARI.length] ?? "",
-    url: null,
+    url: VIDEO_URLS[i] ?? null,
     filename: `shikha-mam-video-${i + 1}.mp4`,
   })),
 ];
