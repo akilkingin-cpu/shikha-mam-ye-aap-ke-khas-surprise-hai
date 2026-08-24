@@ -64,7 +64,7 @@ function MemoryGallery() {
             💖 52 Cards, 52 Yaadein 💖
           </h1>
           <p className="mt-3 text-base font-semibold text-foreground md:text-lg">
-            Har card par ek shayari hai — click karke apni yaad unlock kijiye 🌸
+            Meri pyaari Di, isme aapki khoobsurat yaadein hain... Ek-ek karke saare cards unlock karke zaroor dekhiyega! ✨💖
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
             {hydrated ? `${unlockedCount} / ${GALLERY_CARDS.length} cards unlock ho chuke hain` : "\u00a0"}
