@@ -1,3 +1,5 @@
+import akil36 from "@/assets/gallery/akil36.jpeg.asset.json";
+import akil45 from "@/assets/gallery/akil45.jpeg.asset.json";
 import photo1 from "@/assets/gallery/photo-1.jpeg.asset.json";
 import photo2 from "@/assets/gallery/photo-2.jpeg.asset.json";
 import photo3 from "@/assets/gallery/photo-3.jpeg.asset.json";
