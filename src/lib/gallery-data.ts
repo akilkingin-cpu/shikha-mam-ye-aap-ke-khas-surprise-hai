@@ -40,6 +40,8 @@ export type GalleryCard = {
 };
 
 const PHOTO_URLS: string[] = [
+  akil36.url,
+  akil45.url,
   photo1.url,
   photo2.url,
   photo3.url,
