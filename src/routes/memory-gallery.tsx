@@ -57,14 +57,11 @@ function MemoryGallery() {
     <div className="relative min-h-screen overflow-hidden bg-festive">
       <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-10 md:px-6">
         <div className="text-center">
-          <p className="text-sm font-bold uppercase tracking-widest text-primary md:text-base">
-            ✨ Step 4: Shikha Mam — Yaadon Ka Gallery ✨
-          </p>
-          <h1 className="mt-3 text-3xl font-extrabold text-primary md:text-4xl">
-            💖 52 Cards, 52 Yaadein 💖
+          <h1 className="text-3xl font-extrabold text-primary md:text-4xl">
+            💖 Yaadon Ka Gallery 💖
           </h1>
           <p className="mt-3 text-base font-semibold text-foreground md:text-lg">
-            Meri pyaari Di, isme aapki khoobsurat yaadein hain... Ek-ek karke saare cards unlock karke zaroor dekhiyega! ✨💖
+            Meri pyaari Di, har card me aapke liye ek khas yaad aur shayari hai... Kripya har card ko unlock karke dekhein! 🌸🎁
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
             {hydrated ? `${unlockedCount} / ${GALLERY_CARDS.length} cards unlock ho chuke hain` : "\u00a0"}

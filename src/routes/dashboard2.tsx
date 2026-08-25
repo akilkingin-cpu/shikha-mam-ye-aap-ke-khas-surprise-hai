@@ -1,11 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 
-import { cn } from "@/lib/utils";
 import giftBox from "@/assets/gift-box.png";
-
-const SHAYARI_TEXT =
-  "Aapki har ek sikh aur hansi hamare dil me basti hai. Aapki mithi yaadon se hi zindagi me khushiyan khilti hain. Raho me na aaye kabhi koi bhi gam ka saaya, Har pal aapki yaadon ne hume aage badhna sikhaya!";
 
 export const Route = createFileRoute("/dashboard2")({
   head: () => ({
@@ -31,57 +26,11 @@ export const Route = createFileRoute("/dashboard2")({
 });
 
 function GiftBoxDashboard() {
-  const [speaking, setSpeaking] = useState(false);
-  const [ttsReady, setTtsReady] = useState(false);
-  const [voicesReady, setVoicesReady] = useState(false);
-
-  // Prepare the browser's text-to-speech engine and voices.
-  useEffect(() => {
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
-    setTtsReady(true);
-    const synth = window.speechSynthesis;
-    const update = () => setVoicesReady(synth.getVoices().length > 0);
-    update();
-    synth.addEventListener("voiceschanged", update);
-    return () => synth.removeEventListener("voiceschanged", update);
-  }, []);
-
-  const speakShayari = () => {
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
-    const synth = window.speechSynthesis;
-    if (speaking) {
-      synth.cancel();
-      setSpeaking(false);
-      return;
-    }
-    synth.cancel();
-    const utter = new SpeechSynthesisUtterance(SHAYARI_TEXT);
-    utter.lang = "hi-IN";
-    utter.rate = 0.9;
-    utter.pitch = 1;
-    const voices = synth.getVoices();
-    const hindiVoice =
-      voices.find((v) => v.lang.toLowerCase().startsWith("hi")) ||
-      voices.find((v) => v.lang.toLowerCase().startsWith("en-in"));
-    if (hindiVoice) utter.voice = hindiVoice;
-    utter.onstart = () => setSpeaking(true);
-    utter.onend = () => setSpeaking(false);
-    utter.onerror = () => setSpeaking(false);
-    synth.speak(utter);
-  };
-
   return (
     <div className="relative min-h-screen overflow-hidden bg-festive">
       <div className="relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col px-6 py-8">
-        {/* Top heading */}
-        <div className="mt-2 text-center">
-          <p className="text-sm font-bold uppercase tracking-widest text-primary md:text-base">
-            💖 ✨ Shikha Mam Ke Liye Dashboard 2 (Video Ke Baad Ka Khas Paigham) ✨ 💖
-          </p>
-        </div>
-
         {/* Shayari card */}
-        <div className="mt-5 rounded-3xl border border-border bg-card/80 p-6 shadow-xl backdrop-blur-sm md:p-8">
+        <div className="mt-2 rounded-3xl border border-border bg-card/80 p-6 shadow-xl backdrop-blur-sm md:p-8">
           <h2 className="text-center text-xl font-bold text-foreground md:text-2xl">
             🌸 Aapki Yaadon Ke Liye Pyaari Shayari 🌸
           </h2>
@@ -103,16 +52,6 @@ function GiftBoxDashboard() {
           <p className="mt-2 text-center text-sm font-semibold text-muted-foreground md:text-base">
             👇 Surprise Gift Box 👇
           </p>
-
-          <button
-            type="button"
-            onClick={speakShayari}
-            disabled={!ttsReady}
-            aria-label="Shayari sunne ke liye click karein"
-            className="mx-auto mt-5 flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-md transition hover:bg-primary/90 focus:outline-none focus-visible:ring-4 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {speaking ? "🔊 Bol raha hai..." : "🔊 Shayari Sunein"}
-          </button>
         </div>
 
         {/* Text above gift box */}
