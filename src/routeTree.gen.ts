@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as Dashboard2RouteImport } from './routes/dashboard2'
 import { Route as MemoryGalleryRouteImport } from './routes/memory-gallery'
+import { Route as OwnerDashboardRouteImport } from './routes/owner-dashboard'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const MemoryGalleryRoute = MemoryGalleryRouteImport.update({
   path: '/memory-gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OwnerDashboardRoute = OwnerDashboardRouteImport.update({
+  id: '/owner-dashboard',
+  path: '/owner-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard2': typeof Dashboard2Route
   '/memory-gallery': typeof MemoryGalleryRoute
+  '/owner-dashboard': typeof OwnerDashboardRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard2': typeof Dashboard2Route
   '/memory-gallery': typeof MemoryGalleryRoute
+  '/owner-dashboard': typeof OwnerDashboardRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard2': typeof Dashboard2Route
   '/memory-gallery': typeof MemoryGalleryRoute
+  '/owner-dashboard': typeof OwnerDashboardRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard2' | '/memory-gallery'
+  fullPaths: '/' | '/dashboard2' | '/memory-gallery' | '/owner-dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard2' | '/memory-gallery'
-  id: '__root__' | '/' | '/dashboard2' | '/memory-gallery'
+  to: '/' | '/dashboard2' | '/memory-gallery' | '/owner-dashboard'
+  id: '__root__' | '/' | '/dashboard2' | '/memory-gallery' | '/owner-dashboard'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   Dashboard2Route: typeof Dashboard2Route
   MemoryGalleryRoute: typeof MemoryGalleryRoute
+  OwnerDashboardRoute: typeof OwnerDashboardRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MemoryGalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/owner-dashboard': {
+      id: '/owner-dashboard'
+      path: '/owner-dashboard'
+      fullPath: '/owner-dashboard'
+      preLoaderRoute: typeof OwnerDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   Dashboard2Route: Dashboard2Route,
   MemoryGalleryRoute: MemoryGalleryRoute,
+  OwnerDashboardRoute: OwnerDashboardRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
