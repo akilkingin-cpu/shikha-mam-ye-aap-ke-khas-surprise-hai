@@ -1,12 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import rakhiButton from "@/assets/rakhi-button.png";
 import rakhiVideo from "@/assets/rakhi-video.mp4.asset.json";
-
-const SHAYARI_TEXT =
-  "Badi behan ka farz aapne har mod par nibhaya hai. Apne dhyan aur pyar se har din ko khas banaya hai. Dua hai meri ki aapki zindagi me har khushi beshumar ho. Is Rakhi par aapke liye mera beinteha pyar aur samman ho!";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -36,54 +33,11 @@ export const Route = createFileRoute("/")({
 function WelcomePage() {
   const navigate = useNavigate({ from: "/" });
   const [started, setStarted] = useState(false);
-  const [speaking, setSpeaking] = useState(false);
-  const [ttsReady, setTtsReady] = useState(false);
-  const [voicesReady, setVoicesReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Prepare the browser's text-to-speech engine and voices.
-  useEffect(() => {
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
-    setTtsReady(true);
-    const synth = window.speechSynthesis;
-    const update = () => setVoicesReady(synth.getVoices().length > 0);
-    update();
-    synth.addEventListener("voiceschanged", update);
-    return () => synth.removeEventListener("voiceschanged", update);
-  }, []);
-
-  const speakShayari = () => {
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
-    const synth = window.speechSynthesis;
-    if (speaking) {
-      synth.cancel();
-      setSpeaking(false);
-      return;
-    }
-    synth.cancel();
-    const utter = new SpeechSynthesisUtterance(SHAYARI_TEXT);
-    utter.lang = "hi-IN";
-    utter.rate = 0.9;
-    utter.pitch = 1;
-    const voices = synth.getVoices();
-    const hindiVoice =
-      voices.find((v) => v.lang.toLowerCase().startsWith("hi")) ||
-      voices.find((v) => v.lang.toLowerCase().startsWith("en-in"));
-    if (hindiVoice) utter.voice = hindiVoice;
-    utter.onstart = () => setSpeaking(true);
-    utter.onend = () => setSpeaking(false);
-    utter.onerror = () => setSpeaking(false);
-    synth.speak(utter);
-  };
-
   const handleStart = () => {
     if (started) return;
-    // Stop any ongoing speech before the video starts.
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
-    setSpeaking(false);
     setStarted(true);
 
     const video = videoRef.current;
@@ -120,27 +74,27 @@ function WelcomePage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-festive">
+    <div className="relative min-h-screen bg-festive">
       {/* Intro layer: visible until the Rakhi button is clicked */}
       <div
         className={cn(
-          "relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col px-6 py-8 transition-opacity duration-700",
+          "relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col px-4 py-5 transition-opacity duration-700 sm:px-6 sm:py-8",
           started ? "opacity-0 pointer-events-none" : "opacity-100"
         )}
       >
         {/* Top heading */}
-        <div className="mt-2 text-center">
-          <p className="text-sm font-bold uppercase tracking-widest text-primary md:text-base">
+        <div className="mt-1 text-center sm:mt-2">
+          <p className="text-xs font-bold uppercase tracking-widest text-primary sm:text-sm md:text-base">
             💖 ✨ Shikha Mam aapke Liye Khas Rakhi Paigham ✨ 💖
           </p>
         </div>
 
         {/* Shayari card */}
-        <div className="mt-5 rounded-3xl border border-border bg-card/80 p-6 shadow-xl backdrop-blur-sm md:p-8">
-          <h2 className="text-center text-xl font-bold text-foreground md:text-2xl">
+        <div className="mt-4 rounded-2xl border border-border bg-card/80 p-4 shadow-xl backdrop-blur-sm sm:mt-5 sm:rounded-3xl sm:p-6 md:p-8">
+          <h2 className="text-center text-lg font-bold text-foreground sm:text-xl md:text-2xl">
             🌹 Aapke Liye Pyaari Shayari 🌹
           </h2>
-          <div className="mt-5 space-y-4 text-center text-base leading-relaxed text-foreground md:text-lg">
+          <div className="mt-3 space-y-3 text-center text-sm leading-relaxed text-foreground sm:mt-5 sm:space-y-4 sm:text-base md:text-lg">
             <p>
               Badi behan ka farz aapne har mod par nibhaya hai,
               <br />
@@ -152,26 +106,16 @@ function WelcomePage() {
               Is Rakhi par aapke liye mera beinteha pyar aur samman ho! 🌸✨
             </p>
           </div>
-          <p className="mt-5 text-center text-2xl text-primary md:text-3xl">
+          <p className="mt-3 text-center text-xl text-primary sm:mt-5 sm:text-2xl md:text-3xl">
             ❤️ 💖 💖 💖 ❤️
           </p>
-          <p className="mt-2 text-center text-sm font-semibold text-muted-foreground md:text-base">
+          <p className="mt-1 text-center text-xs font-semibold text-muted-foreground sm:mt-2 sm:text-sm md:text-base">
             👇 Khas Paigham 👇
           </p>
-
-          <button
-            type="button"
-            onClick={speakShayari}
-            disabled={!ttsReady}
-            aria-label="Shayari sunne ke liye click karein"
-            className="mx-auto mt-5 flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-md transition hover:bg-primary/90 focus:outline-none focus-visible:ring-4 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {speaking ? "🔊 Bol raha hai..." : "🔊 Shayari Sunein"}
-          </button>
         </div>
 
         {/* Center Rakhi button */}
-        <div className="flex flex-1 items-center justify-center py-6">
+        <div className="flex flex-1 items-center justify-center py-4 sm:py-6">
           <button
             type="button"
             onClick={handleStart}
@@ -184,16 +128,16 @@ function WelcomePage() {
               width={192}
               height={192}
               loading="eager"
-              className="h-44 w-44 rounded-full object-cover drop-shadow-2xl transition-transform duration-300 group-hover:scale-110 md:h-52 md:w-52"
+              className="h-36 w-36 rounded-full object-cover drop-shadow-2xl transition-transform duration-300 group-hover:scale-110 sm:h-44 sm:w-44 md:h-52 md:w-52"
             />
-            <span className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground shadow md:text-sm">
+            <span className="absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow sm:-bottom-10 sm:px-4 sm:py-1.5 sm:text-sm">
               Rakhi par click kijiye
             </span>
           </button>
         </div>
 
         {/* Bottom instruction */}
-        <p className="pb-4 text-center text-base font-semibold text-foreground md:text-lg">
+        <p className="pb-2 text-center text-sm font-semibold text-foreground sm:pb-4 sm:text-base md:text-lg">
           🎁 "Shikha Mam, ye di gayi Rakhi par click kijiye aur apna khas surprise
           dekhiye!" 🎁
         </p>
@@ -202,7 +146,7 @@ function WelcomePage() {
       {/* Floating decorative hearts (subtle) */}
       <div
         className={cn(
-          "pointer-events-none absolute inset-0 z-0 overflow-hidden transition-opacity duration-700",
+          "pointer-events-none fixed inset-0 z-0 overflow-hidden transition-opacity duration-700",
           started ? "opacity-0" : "opacity-100"
         )}
       >
