@@ -1,9 +1,8 @@
 import { UNLOCK_STORAGE_KEY } from "@/lib/gallery-data";
-import { supabase } from "@/integrations/supabase/client";
+import { createVisitor, updateVisitorProgress } from "@/lib/visitors.functions";
 
 export const VISITOR_ID_KEY = "rakhi-visitor-id";
-export const OWNER_UNLOCK_KEY = "rakhi-owner-unlocked";
-export const OWNER_PASSWORD = "ILOVEYOU";
+export const OWNER_PASSWORD_KEY = "rakhi-owner-password";
 
 export type VisitorEntry = {
   id: string;
@@ -35,7 +34,7 @@ type VisitorRow = {
   total_cards: number;
 };
 
-function mapRow(row: VisitorRow): VisitorEntry {
+export function mapRow(row: VisitorRow): VisitorEntry {
   return {
     id: row.id,
     name: row.name,
@@ -50,15 +49,6 @@ function mapRow(row: VisitorRow): VisitorEntry {
     unlockedCount: row.unlocked_count,
     totalCards: row.total_cards,
   };
-}
-
-export async function getVisitorEntries(): Promise<VisitorEntry[]> {
-  const { data, error } = await supabase
-    .from("visitors")
-    .select("*")
-    .order("visited_at", { ascending: false });
-  if (error || !data) return [];
-  return (data as VisitorRow[]).map(mapRow);
 }
 
 export function detectDevice(ua: string) {
@@ -87,7 +77,7 @@ export function getUnlockedCount(): number {
   try {
     const raw = window.localStorage.getItem(UNLOCK_STORAGE_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed.length : 0;
+    return Array.isArray(parsed) ? Math.min(parsed.length, 52) : 0;
   } catch {
     return 0;
   }
@@ -101,35 +91,30 @@ export async function saveVisitor(input: {
 }): Promise<void> {
   const ua = window.navigator.userAgent;
   const { device, browser } = detectDevice(ua);
-  const { data, error } = await supabase
-    .from("visitors")
-    .insert({
-      name: input.name,
+  const { id } = await createVisitor({
+    data: {
+      name: input.name.trim().slice(0, 60),
       latitude: input.latitude,
       longitude: input.longitude,
       accuracy: input.accuracy,
-      maps_url: `https://www.google.com/maps?q=${input.latitude},${input.longitude}`,
       device,
       browser,
-      user_agent: ua,
-      unlocked_count: getUnlockedCount(),
-      total_cards: 52,
-    })
-    .select("id")
-    .single();
-
-  if (error || !data) throw error ?? new Error("Save failed");
-  window.localStorage.setItem(VISITOR_ID_KEY, data.id);
+      userAgent: ua.slice(0, 500),
+      unlockedCount: getUnlockedCount(),
+    },
+  });
+  window.localStorage.setItem(VISITOR_ID_KEY, id);
 }
 
 export async function syncCurrentVisitorProgress() {
   if (typeof window === "undefined") return;
   const id = window.localStorage.getItem(VISITOR_ID_KEY);
   if (!id) return;
-  await supabase
-    .from("visitors")
-    .update({ unlocked_count: getUnlockedCount() })
-    .eq("id", id);
+  try {
+    await updateVisitorProgress({ data: { id, unlockedCount: getUnlockedCount() } });
+  } catch {
+    // progress sync is best-effort
+  }
 }
 
 export function hasVisitorAccess(): boolean {
