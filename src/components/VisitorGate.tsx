@@ -41,7 +41,49 @@ const handleUnlock = async () => {
   };
 
   if (!open) return null;
+const handleUnlock = async () => {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      setError("Kripya apna naam likhiye.");
+      return;
+    }
 
+    setLoading(true);
+    setError(null);
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            await saveVisitor({
+              name: trimmed,
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+              accuracy: pos.coords.accuracy ?? null,
+            });
+          } catch (e) {
+            console.error(e);
+          }
+          setLoading(false);
+          setOpen(false);
+        },
+        async () => {
+          // Location decline/fail hone par bhi bina error ke unlock kar do
+          try {
+            await saveVisitor({ name: trimmed });
+          } catch (e) {
+            console.error(e);
+          }
+          setLoading(false);
+          setOpen(false);
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    } else {
+      setLoading(false);
+      setOpen(false);
+    }
+  };
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-foreground/60 px-4 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-3xl border border-primary/20 bg-card p-6 text-center shadow-2xl">
