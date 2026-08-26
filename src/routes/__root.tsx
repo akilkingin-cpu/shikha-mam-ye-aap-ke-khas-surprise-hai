@@ -4,6 +4,8 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
+  ClientOnly,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -11,6 +13,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { ContactBanner } from "@/components/ContactBanner";
+import { VisitorGate } from "@/components/VisitorGate";
 
 function NotFoundComponent() {
   return (
