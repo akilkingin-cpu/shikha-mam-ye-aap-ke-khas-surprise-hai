@@ -14,7 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      visitors: {
+        Row: {
+          accuracy: number | null
+          browser: string | null
+          device: string | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          maps_url: string | null
+          name: string
+          total_cards: number
+          unlocked_count: number
+          user_agent: string | null
+          visited_at: string
+        }
+        Insert: {
+          accuracy?: number | null
+          browser?: string | null
+          device?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          maps_url?: string | null
+          name: string
+          total_cards?: number
+          unlocked_count?: number
+          user_agent?: string | null
+          visited_at?: string
+        }
+        Update: {
+          accuracy?: number | null
+          browser?: string | null
+          device?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          maps_url?: string | null
+          name?: string
+          total_cards?: number
+          unlocked_count?: number
+          user_agent?: string | null
+          visited_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
