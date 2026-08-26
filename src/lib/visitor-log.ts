@@ -106,8 +106,9 @@ export function syncCurrentVisitorProgress() {
   if (!id) return;
   const entries = read();
   const idx = entries.findIndex((e) => e.id === id);
-  if (idx === -1) return;
-  entries[idx] = { ...entries[idx], unlockedCount: getUnlockedCount() };
+  const current = entries[idx];
+  if (!current) return;
+  entries[idx] = { ...current, unlockedCount: getUnlockedCount() };
   write(entries);
 }
 
