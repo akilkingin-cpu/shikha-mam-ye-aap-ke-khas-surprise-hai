@@ -4,6 +4,8 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
+  ClientOnly,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -11,6 +13,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { ContactBanner } from "@/components/ContactBanner";
+import { VisitorGate } from "@/components/VisitorGate";
 
 function NotFoundComponent() {
   return (
@@ -138,9 +142,15 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isOwner = pathname.startsWith("/owner-dashboard");
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ClientOnly fallback={null}>
+        <ContactBanner />
+        {!isOwner && <VisitorGate />}
+      </ClientOnly>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>
