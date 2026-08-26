@@ -30,87 +30,42 @@ const handleUnlock = async () => {
       setError("Kripya apna naam likhiye.");
       return;
     }
-    setLoading(true);
-    try {
-      await saveVisitor({ name: trimmed });
-    } catch (e) {
-      console.error(e);
-    }
-    setLoading(false);
-    setOpen(false);
-  };
-
-  if (!open) return null;
-const handleUnlock = async () => {
-    const trimmed = name.trim();
-    if (!trimmed) {
-      setError("Kripya apna naam likhiye.");
-      return;
-    }
 
     setLoading(true);
     setError(null);
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          try {
-            await saveVisitor({
-              name: trimmed,
-              latitude: pos.coords.latitude,
-              longitude: pos.coords.longitude,
-              accuracy: pos.coords.accuracy ?? null,
-            });
-          } catch (e) {
-            console.error(e);
-          }
-          setLoading(false);
-          setOpen(false);
-        },
-        async () => {
-          // Location decline/fail hone par bhi bina error ke unlock kar do
-          try {
-            await saveVisitor({ name: trimmed });
-          } catch (e) {
-            console.error(e);
-          }
-          setLoading(false);
-          setOpen(false);
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    } else {
+    if (!("geolocation" in navigator)) {
+      await saveVisitor({ name: trimmed });
       setLoading(false);
       setOpen(false);
+      return;
     }
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          await saveVisitor({
+            name: trimmed,
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            accuracy: pos.coords.accuracy ?? null,
+          });
+        } catch (e) {
+          console.error(e);
+        }
+        setLoading(false);
+        setOpen(false);
+      },
+      async (err) => {
+        console.warn("Location fetch error:", err);
+        try {
+          await saveVisitor({ name: trimmed });
+        } catch (e) {
+          console.error(e);
+        }
+        setLoading(false);
+        setOpen(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
   };
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-foreground/60 px-4 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-3xl border border-primary/20 bg-card p-6 text-center shadow-2xl">
-        <div className="text-4xl">🎀</div>
-        <h2 className="mt-3 text-xl font-bold text-foreground sm:text-2xl">
-          Enter your name to unlock your Rakhi Surprise!
-        </h2>
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleUnlock()}
-          maxLength={60}
-          placeholder="Visitor Name"
-          className="mt-5 w-full rounded-full border border-primary/30 bg-background px-5 py-3 text-center text-base text-foreground outline-none focus:border-primary"
-        />
-        {error && <p className="mt-3 text-sm font-medium text-destructive">{error}</p>}
-        <button
-          onClick={handleUnlock}
-          disabled={loading}
-          className="mt-5 w-full rounded-full bg-primary px-6 py-3 text-base font-semibold text-primary-foreground shadow-lg transition hover:bg-primary/90 disabled:opacity-60"
-        >
-          {loading ? "Location le rahe hain..." : "📍 Allow Location & Unlock"}
-        </button>
-        <p className="mt-3 text-xs text-muted-foreground">
-          Location access compulsory hai surprise dekhne ke liye.
-        </p>
-      </div>
-    </div>
-  );
-}
