@@ -151,6 +151,8 @@ function RootComponent() {
         <ContactBanner />
         {!isOwner && <VisitorGate />}
       </ClientOnly>
+      {/* Spacer reserves room for the fixed ContactBanner so page content isn't hidden behind it. */}
+      <div className="h-12 shrink-0" />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>

@@ -12,7 +12,7 @@ export function ContactBanner() {
   };
 
   return (
-    <div className="fixed right-2 top-2 z-50 flex max-w-[95vw] flex-wrap items-center justify-end gap-2 rounded-full border border-primary/20 bg-card/90 px-3 py-1.5 text-xs shadow-md backdrop-blur sm:text-sm">
+    <div className="fixed right-2 top-2 z-50 flex max-w-[95vw] flex-wrap items-center justify-end gap-2 rounded-full border border-primary/20 bg-card/90 px-3 py-1 text-xs shadow-md backdrop-blur sm:text-sm">
       <span className="font-semibold text-foreground">Made by Akil</span>
       <a href="tel:9026218560" className="font-medium text-primary hover:underline">
         9026218560
