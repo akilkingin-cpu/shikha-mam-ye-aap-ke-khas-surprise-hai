@@ -57,15 +57,14 @@ export function VisitorGate() {
           });
           setLoading(false);
           setOpen(false);
-        } catch {
+        } } catch {
           setLoading(false);
-          setError("Kuch gadbad ho gayi, dobara try kijiye.");
+          setOpen(false);
         }
       },
       () => {
         setLoading(false);
-        setError("Location access is compulsory to view the surprise. Please allow location!");
-        window.alert("Location access is compulsory to view the surprise. Please allow location!");
+        setOpen(false);
       },
       { enableHighAccuracy: true, timeout: 15000 },
     );
