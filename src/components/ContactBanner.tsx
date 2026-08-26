@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { OWNER_PASSWORD, OWNER_UNLOCK_KEY } from "@/lib/visitor-log";
+
 
 const WA_URL =
   "https://wa.me/919026218560?text=Hi%20Akil,%20maine%20aapka%20Rakhi%20Surprise%20portal%20dekha!%20Mujhe%20aapse%20baat%20karni%20hai.";
@@ -8,14 +8,7 @@ export function ContactBanner() {
   const navigate = useNavigate();
 
   const openOwner = () => {
-    const input = window.prompt("Password daaliye:");
-    if (input === null) return;
-    if (input === OWNER_PASSWORD) {
-      window.localStorage.setItem(OWNER_UNLOCK_KEY, "1");
-      navigate({ to: "/owner-dashboard" });
-    } else {
-      window.alert("Galat password!");
-    }
+    navigate({ to: "/owner-dashboard" });
   };
 
   return (
