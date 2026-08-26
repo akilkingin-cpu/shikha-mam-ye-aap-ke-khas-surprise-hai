@@ -1,6 +1,6 @@
 import { UNLOCK_STORAGE_KEY } from "@/lib/gallery-data";
+import { supabase } from "@/integrations/supabase/client";
 
-export const VISITOR_LOG_KEY = "rakhi-visitor-log";
 export const VISITOR_ID_KEY = "rakhi-visitor-id";
 export const OWNER_UNLOCK_KEY = "rakhi-owner-unlocked";
 export const OWNER_PASSWORD = "ILOVEYOU";
@@ -8,10 +8,10 @@ export const OWNER_PASSWORD = "ILOVEYOU";
 export type VisitorEntry = {
   id: string;
   name: string;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   accuracy: number | null;
-  mapsUrl: string;
+  mapsUrl: string | null;
   visitedAt: string;
   device: string;
   browser: string;
@@ -20,23 +20,45 @@ export type VisitorEntry = {
   totalCards: number;
 };
 
-function read(): VisitorEntry[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(VISITOR_LOG_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? (parsed as VisitorEntry[]) : [];
-  } catch {
-    return [];
-  }
+type VisitorRow = {
+  id: string;
+  name: string;
+  latitude: number | null;
+  longitude: number | null;
+  accuracy: number | null;
+  maps_url: string | null;
+  visited_at: string;
+  device: string | null;
+  browser: string | null;
+  user_agent: string | null;
+  unlocked_count: number;
+  total_cards: number;
+};
+
+function mapRow(row: VisitorRow): VisitorEntry {
+  return {
+    id: row.id,
+    name: row.name,
+    latitude: row.latitude,
+    longitude: row.longitude,
+    accuracy: row.accuracy,
+    mapsUrl: row.maps_url,
+    visitedAt: row.visited_at,
+    device: row.device ?? "Unknown",
+    browser: row.browser ?? "Unknown browser",
+    userAgent: row.user_agent ?? "",
+    unlockedCount: row.unlocked_count,
+    totalCards: row.total_cards,
+  };
 }
 
-function write(entries: VisitorEntry[]) {
-  window.localStorage.setItem(VISITOR_LOG_KEY, JSON.stringify(entries));
-}
-
-export function getVisitorEntries(): VisitorEntry[] {
-  return read().sort((a, b) => b.visitedAt.localeCompare(a.visitedAt));
+export async function getVisitorEntries(): Promise<VisitorEntry[]> {
+  const { data, error } = await supabase
+    .from("visitors")
+    .select("*")
+    .order("visited_at", { ascending: false });
+  if (error || !data) return [];
+  return (data as VisitorRow[]).map(mapRow);
 }
 
 export function detectDevice(ua: string) {
@@ -71,45 +93,43 @@ export function getUnlockedCount(): number {
   }
 }
 
-export function saveVisitor(input: {
+export async function saveVisitor(input: {
   name: string;
   latitude: number;
   longitude: number;
   accuracy: number | null;
-}): VisitorEntry {
+}): Promise<void> {
   const ua = window.navigator.userAgent;
   const { device, browser } = detectDevice(ua);
-  const entry: VisitorEntry = {
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    name: input.name,
-    latitude: input.latitude,
-    longitude: input.longitude,
-    accuracy: input.accuracy,
-    mapsUrl: `https://www.google.com/maps?q=${input.latitude},${input.longitude}`,
-    visitedAt: new Date().toISOString(),
-    device,
-    browser,
-    userAgent: ua,
-    unlockedCount: getUnlockedCount(),
-    totalCards: 52,
-  };
-  const entries = read();
-  entries.push(entry);
-  write(entries);
-  window.localStorage.setItem(VISITOR_ID_KEY, entry.id);
-  return entry;
+  const { data, error } = await supabase
+    .from("visitors")
+    .insert({
+      name: input.name,
+      latitude: input.latitude,
+      longitude: input.longitude,
+      accuracy: input.accuracy,
+      maps_url: `https://www.google.com/maps?q=${input.latitude},${input.longitude}`,
+      device,
+      browser,
+      user_agent: ua,
+      unlocked_count: getUnlockedCount(),
+      total_cards: 52,
+    })
+    .select("id")
+    .single();
+
+  if (error || !data) throw error ?? new Error("Save failed");
+  window.localStorage.setItem(VISITOR_ID_KEY, data.id);
 }
 
-export function syncCurrentVisitorProgress() {
+export async function syncCurrentVisitorProgress() {
   if (typeof window === "undefined") return;
   const id = window.localStorage.getItem(VISITOR_ID_KEY);
   if (!id) return;
-  const entries = read();
-  const idx = entries.findIndex((e) => e.id === id);
-  const current = entries[idx];
-  if (!current) return;
-  entries[idx] = { ...current, unlockedCount: getUnlockedCount() };
-  write(entries);
+  await supabase
+    .from("visitors")
+    .update({ unlocked_count: getUnlockedCount() })
+    .eq("id", id);
 }
 
 export function hasVisitorAccess(): boolean {

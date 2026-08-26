@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   OWNER_PASSWORD,
   OWNER_UNLOCK_KEY,
@@ -46,8 +47,20 @@ function OwnerDashboard() {
       return;
     }
     setAllowed(true);
-    syncCurrentVisitorProgress();
-    setEntries(getVisitorEntries());
+
+    const load = () => {
+      getVisitorEntries().then(setEntries);
+    };
+    syncCurrentVisitorProgress().then(load);
+
+    const channel = supabase
+      .channel("visitors-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "visitors" }, load)
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [navigate]);
 
   if (!allowed) return null;
@@ -77,16 +90,21 @@ function OwnerDashboard() {
               </div>
               <dl className="mt-3 space-y-1 text-sm text-muted-foreground">
                 <div>
-                  📍 {v.latitude.toFixed(6)}, {v.longitude.toFixed(6)}
-                  {v.accuracy ? ` (±${Math.round(v.accuracy)}m)` : ""} —{" "}
-                  <a
-                    href={v.mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-medium text-primary hover:underline"
-                  >
-                    Google Maps
-                  </a>
+                  📍 {v.latitude?.toFixed(6) ?? "—"}, {v.longitude?.toFixed(6) ?? "—"}
+                  {v.accuracy ? ` (±${Math.round(v.accuracy)}m)` : ""}
+                  {v.mapsUrl && (
+                    <>
+                      {" — "}
+                      <a
+                        href={v.mapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-primary hover:underline"
+                      >
+                        Google Maps
+                      </a>
+                    </>
+                  )}
                 </div>
                 <div>🕒 {new Date(v.visitedAt).toLocaleString()}</div>
                 <div>
