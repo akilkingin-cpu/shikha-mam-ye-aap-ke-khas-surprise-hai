@@ -138,9 +138,15 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isOwner = pathname.startsWith("/owner-dashboard");
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ClientOnly fallback={null}>
+        <ContactBanner />
+        {!isOwner && <VisitorGate />}
+      </ClientOnly>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>
