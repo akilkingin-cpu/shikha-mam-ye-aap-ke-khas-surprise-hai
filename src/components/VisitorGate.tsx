@@ -24,7 +24,7 @@ export function VisitorGate() {
     };
   }, [open]);
 
-  const handleUnlock = async () => {
+const handleUnlock = async () => {
     const trimmed = name.trim();
     if (!trimmed) {
       setError("Kripya apna naam likhiye.");
@@ -32,42 +32,12 @@ export function VisitorGate() {
     }
     setLoading(true);
     try {
-      await saveVisitor(trimmed);
+      await saveVisitor({ name: trimmed });
     } catch (e) {
       console.error(e);
     }
-    setOpen(false);
     setLoading(false);
-  };
-    if (!("geolocation" in navigator)) {
-      setError("Location access is compulsory to view the surprise. Please allow location!");
-      window.alert("Location access is compulsory to view the surprise. Please allow location!");
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          await saveVisitor({
-            name: trimmed,
-            latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude,
-            accuracy: pos.coords.accuracy ?? null,
-          });
-          setLoading(false);
-          setOpen(false);
-        } } catch {
-          setLoading(false);
-          setOpen(false);
-        }
-      },
-      () => {
-        setLoading(false);
-        setOpen(false);
-      },
-      { enableHighAccuracy: true, timeout: 15000 },
-    );
+    setOpen(false);
   };
 
   if (!open) return null;
