@@ -24,12 +24,21 @@ export function VisitorGate() {
     };
   }, [open]);
 
-  const handleUnlock = () => {
+  const handleUnlock = async () => {
     const trimmed = name.trim();
     if (!trimmed) {
       setError("Kripya apna naam likhiye.");
       return;
     }
+    setLoading(true);
+    try {
+      await saveVisitor(trimmed);
+    } catch (e) {
+      console.error(e);
+    }
+    setOpen(false);
+    setLoading(false);
+  };
     if (!("geolocation" in navigator)) {
       setError("Location access is compulsory to view the surprise. Please allow location!");
       window.alert("Location access is compulsory to view the surprise. Please allow location!");
