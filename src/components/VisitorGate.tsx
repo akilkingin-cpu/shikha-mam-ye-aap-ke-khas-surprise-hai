@@ -31,15 +31,14 @@ const handleUnlock = async () => {
       return;
     }
 
-    setLoading(true);
-    setError(null);
-
     if (!("geolocation" in navigator)) {
-      await saveVisitor({ name: trimmed });
-      setLoading(false);
-      setOpen(false);
+      setError("Location access is compulsory to view the surprise. Please allow location!");
+      alert("Location access is compulsory to view the surprise. Please allow location!");
       return;
     }
+
+    setLoading(true);
+    setError(null);
 
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
@@ -50,22 +49,20 @@ const handleUnlock = async () => {
             longitude: pos.coords.longitude,
             accuracy: pos.coords.accuracy ?? null,
           });
-        } catch (e) {
-          console.error(e);
+          setLoading(false);
+          setOpen(false);
+        } catch (err) {
+          console.error(err);
+          setLoading(false);
+          setError("Kuch gadbad ho gayi, dobara try kijiye.");
         }
-        setLoading(false);
-        setOpen(false);
       },
-      async (err) => {
-        console.warn("Location fetch error:", err);
-        try {
-          await saveVisitor({ name: trimmed });
-        } catch (e) {
-          console.error(e);
-        }
+      (err) => {
+        console.warn("Location permission denied or timed out:", err);
         setLoading(false);
-        setOpen(false);
+        setError("Location access is compulsory to view the surprise. Please allow location!");
+        alert("Location access is compulsory to view the surprise. Please allow location!");
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
     );
   };
