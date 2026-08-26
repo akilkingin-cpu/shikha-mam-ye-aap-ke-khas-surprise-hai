@@ -46,8 +46,20 @@ function OwnerDashboard() {
       return;
     }
     setAllowed(true);
-    syncCurrentVisitorProgress();
-    setEntries(getVisitorEntries());
+
+    const load = () => {
+      getVisitorEntries().then(setEntries);
+    };
+    syncCurrentVisitorProgress().then(load);
+
+    const channel = supabase
+      .channel("visitors-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "visitors" }, load)
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [navigate]);
 
   if (!allowed) return null;
