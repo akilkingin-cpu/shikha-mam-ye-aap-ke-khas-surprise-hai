@@ -38,15 +38,20 @@ export function VisitorGate() {
     setLoading(true);
     setError(null);
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        saveVisitor({
-          name: trimmed,
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          accuracy: pos.coords.accuracy ?? null,
-        });
-        setLoading(false);
-        setOpen(false);
+      async (pos) => {
+        try {
+          await saveVisitor({
+            name: trimmed,
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            accuracy: pos.coords.accuracy ?? null,
+          });
+          setLoading(false);
+          setOpen(false);
+        } catch {
+          setLoading(false);
+          setError("Kuch gadbad ho gayi, dobara try kijiye.");
+        }
       },
       () => {
         setLoading(false);
