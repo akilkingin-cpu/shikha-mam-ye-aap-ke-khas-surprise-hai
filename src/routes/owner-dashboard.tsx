@@ -90,16 +90,21 @@ function OwnerDashboard() {
               </div>
               <dl className="mt-3 space-y-1 text-sm text-muted-foreground">
                 <div>
-                  📍 {v.latitude.toFixed(6)}, {v.longitude.toFixed(6)}
-                  {v.accuracy ? ` (±${Math.round(v.accuracy)}m)` : ""} —{" "}
-                  <a
-                    href={v.mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-medium text-primary hover:underline"
-                  >
-                    Google Maps
-                  </a>
+                  📍 {v.latitude?.toFixed(6) ?? "—"}, {v.longitude?.toFixed(6) ?? "—"}
+                  {v.accuracy ? ` (±${Math.round(v.accuracy)}m)` : ""}
+                  {v.mapsUrl && (
+                    <>
+                      {" — "}
+                      <a
+                        href={v.mapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-primary hover:underline"
+                      >
+                        Google Maps
+                      </a>
+                    </>
+                  )}
                 </div>
                 <div>🕒 {new Date(v.visitedAt).toLocaleString()}</div>
                 <div>
