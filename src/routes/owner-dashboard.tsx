@@ -1,15 +1,15 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { listVisitors } from "@/lib/visitors.functions";
 import {
-  OWNER_PASSWORD,
-  OWNER_UNLOCK_KEY,
-  getVisitorEntries,
+  OWNER_PASSWORD_KEY,
+  mapRow,
   syncCurrentVisitorProgress,
   type VisitorEntry,
 } from "@/lib/visitor-log";
 
 export const Route = createFileRoute("/owner-dashboard")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Owner Dashboard — Rakhi Surprise Visitors" },
@@ -36,30 +36,40 @@ function OwnerDashboard() {
   const [entries, setEntries] = useState<VisitorEntry[]>([]);
 
   useEffect(() => {
-    let ok = window.localStorage.getItem(OWNER_UNLOCK_KEY) === "1";
-    if (!ok) {
-      const input = window.prompt("Password daaliye:");
-      ok = input === OWNER_PASSWORD;
-      if (ok) window.localStorage.setItem(OWNER_UNLOCK_KEY, "1");
-    }
-    if (!ok) {
+    let cancelled = false;
+    let timer: ReturnType<typeof setInterval> | undefined;
+
+    const password =
+      window.sessionStorage.getItem(OWNER_PASSWORD_KEY) ?? window.prompt("Password daaliye:");
+
+    if (!password) {
       navigate({ to: "/" });
       return;
     }
-    setAllowed(true);
 
-    const load = () => {
-      getVisitorEntries().then(setEntries);
+    const load = async () => {
+      try {
+        const rows = await listVisitors({ data: { password } });
+        if (cancelled) return;
+        window.sessionStorage.setItem(OWNER_PASSWORD_KEY, password);
+        setAllowed(true);
+        setEntries(rows.map(mapRow));
+      } catch {
+        if (cancelled) return;
+        window.sessionStorage.removeItem(OWNER_PASSWORD_KEY);
+        window.alert("Galat password!");
+        navigate({ to: "/" });
+      }
     };
-    syncCurrentVisitorProgress().then(load);
 
-    const channel = supabase
-      .channel("visitors-live")
-      .on("postgres_changes", { event: "*", schema: "public", table: "visitors" }, load)
-      .subscribe();
+    syncCurrentVisitorProgress().finally(() => {
+      void load();
+      timer = setInterval(() => void load(), 10000);
+    });
 
     return () => {
-      supabase.removeChannel(channel);
+      cancelled = true;
+      if (timer) clearInterval(timer);
     };
   }, [navigate]);
 
